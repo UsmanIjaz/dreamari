@@ -1,0 +1,192 @@
+{
+  "info": {
+    "name": "Dreamari API",
+    "description": "BUILD -> MATCH -> Career Report, plus the admin module. Auth is Better Auth (cookie sessions): run 'Auth > Admin login' (or 'Student login') first; Postman's cookie jar reuses the session cookie automatically for the rest.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" },
+    { "key": "studentToken", "value": "" },
+    { "key": "adminToken", "value": "" },
+    { "key": "inviteCode", "value": "DRM-WELCOME" },
+    { "key": "careerCode", "value": "software-engineer" }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "request": { "method": "GET", "url": "{{baseUrl}}/health" },
+      "event": [
+        { "listen": "test", "script": { "exec": ["pm.test('200', () => pm.response.to.have.status(200));", "pm.test('db ok', () => pm.expect(pm.response.json().db).to.be.true);"] } }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Admin login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"admin@dreamari.test\",\n  \"password\": \"dreamari123\"\n}" },
+            "url": "{{baseUrl}}/api/auth/sign-in/email"
+          },
+          "event": [
+            { "listen": "test", "script": { "exec": ["pm.test('200', () => pm.response.to.have.status(200));", "pm.collectionVariables.set('adminToken', pm.response.json().token);"] } }
+          ]
+        },
+        {
+          "name": "Student login (Maya)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"maya@demo.test\",\n  \"password\": \"dreamari123\"\n}" },
+            "url": "{{baseUrl}}/api/auth/sign-in/email"
+          },
+          "event": [
+            { "listen": "test", "script": { "exec": ["pm.test('200', () => pm.response.to.have.status(200));", "pm.collectionVariables.set('studentToken', pm.response.json().token);"] } }
+          ]
+        },
+        {
+          "name": "Student sign-up (direct)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"riley@demo.test\",\n  \"password\": \"dreamari123\",\n  \"name\": \"Riley\"\n}" },
+            "url": "{{baseUrl}}/api/auth/sign-up/email"
+          },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('200', () => pm.response.to.have.status(200));", "pm.collectionVariables.set('studentToken', pm.response.json().token);"] } }]
+        },
+        {
+          "name": "Sign in as guest (anonymous)",
+          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{}" }, "url": "{{baseUrl}}/api/auth/sign-in/anonymous" }
+        },
+        {
+          "name": "Invite details (public)",
+          "request": { "method": "GET", "url": "{{baseUrl}}/v1/invite/{{inviteCode}}" },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('200', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "Attach invite to current session",
+          "description": "Run a sign-up/login first; binds the signed-in student to the invite's school/cohort.",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"code\": \"{{inviteCode}}\"\n}" },
+            "url": "{{baseUrl}}/v1/invite/attach"
+          },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('200', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "Session (me)",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/auth/get-session" }
+        }
+      ]
+    },
+    {
+      "name": "Build",
+      "item": [
+        {
+          "name": "Save BUILD",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{studentToken}}" }],
+            "body": { "mode": "raw", "raw": "{\n  \"grade\": \"11th grade\",\n  \"gpa\": \"3.5 – 3.8\",\n  \"subjects\": [\"Computer Science\", \"Mathematics\", \"Art\"],\n  \"strengths\": [\"Problem solving\", \"Technology\"],\n  \"days\": [\"Build things\", \"Solve problems\"],\n  \"values\": [\"Income\", \"Creativity\"],\n  \"energy\": \"Balanced\",\n  \"team\": \"Small team\",\n  \"interaction\": \"Some talking\",\n  \"years\": \"4 years\",\n  \"finance\": \"Not a concern\",\n  \"location\": \"Anywhere in the US\",\n  \"pathPref\": \"college\"\n}" },
+            "url": "{{baseUrl}}/v1/build"
+          },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('200', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "Get BUILD",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{studentToken}}" }], "url": "{{baseUrl}}/v1/build" }
+        }
+      ]
+    },
+    {
+      "name": "Match",
+      "item": [
+        {
+          "name": "Top careers + majors",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{studentToken}}" }], "url": "{{baseUrl}}/v1/match" },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('200', () => pm.response.to.have.status(200));", "pm.test('has careers', () => pm.expect(pm.response.json().careers.length).to.be.above(0));"] } }]
+        },
+        {
+          "name": "Swipe deck",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{studentToken}}" }], "url": "{{baseUrl}}/v1/match/deck" }
+        }
+      ]
+    },
+    {
+      "name": "Swipes",
+      "item": [
+        {
+          "name": "Record swipe (LIKE)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{studentToken}}" }],
+            "body": { "mode": "raw", "raw": "{\n  \"majorCode\": \"computer-science\",\n  \"decision\": \"LIKE\",\n  \"facetAnswers\": [true, true, true, false, true]\n}" },
+            "url": "{{baseUrl}}/v1/swipes"
+          },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('200', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "My swipes",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{studentToken}}" }], "url": "{{baseUrl}}/v1/swipes" }
+        }
+      ]
+    },
+    {
+      "name": "Report",
+      "item": [
+        {
+          "name": "Career Report (liked majors)",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{studentToken}}" }], "url": "{{baseUrl}}/v1/report" }
+        },
+        {
+          "name": "Full report for one career",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{studentToken}}" }], "url": "{{baseUrl}}/v1/report/career/{{careerCode}}" }
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "Create invite (name + email required)",
+          "description": "Both firstName and a valid email are required; the API emails the invite link via Resend.",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "body": { "mode": "raw", "raw": "{\n  \"firstName\": \"Jordan\",\n  \"email\": \"jordan@example.com\"\n}" },
+            "url": "{{baseUrl}}/v1/admin/invites"
+          },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('201', () => pm.response.to.have.status(201));"] } }]
+        },
+        {
+          "name": "List invites",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }], "url": "{{baseUrl}}/v1/admin/invites" }
+        },
+        {
+          "name": "Students (progress)",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }], "url": "{{baseUrl}}/v1/admin/students" },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('200', () => pm.response.to.have.status(200));"] } }]
+        },
+        {
+          "name": "Analytics",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }], "url": "{{baseUrl}}/v1/admin/analytics" }
+        },
+        {
+          "name": "Student blocked from admin (expect 403)",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{studentToken}}" }], "url": "{{baseUrl}}/v1/admin/students" },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('403', () => pm.response.to.have.status(403));"] } }]
+        }
+      ]
+    },
+    {
+      "name": "Content",
+      "item": [
+        { "name": "All careers", "request": { "method": "GET", "url": "{{baseUrl}}/v1/careers" } },
+        { "name": "All majors", "request": { "method": "GET", "url": "{{baseUrl}}/v1/majors" } }
+      ]
+    }
+  ]
+}

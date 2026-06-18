@@ -1,0 +1,195 @@
+// Dreamari API data model. Auth is now owned by Better Auth (user/session/account/
+// verification + the admin & anonymous plugins). Our domain tables (BuildProfile,
+// Swipe, Invite) reference user.id.
+
+generator client {
+  provider      = "prisma-client-js"
+  // "native" for local dev; debian target for the Docker/Railway runtime
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum InviteStatus {
+  PENDING
+  REDEEMED
+  REVOKED
+}
+
+enum SwipeDecision {
+  LIKE
+  PASS
+}
+
+// ---- Better Auth core (+ admin & anonymous plugin fields) ----
+model User {
+  id            String    @id @default(cuid())
+  name          String
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  // admin plugin
+  role          String?   @default("user")
+  banned        Boolean?
+  banReason     String?
+  banExpires    DateTime?
+  // anonymous plugin
+  isAnonymous   Boolean?
+
+  sessions Session[]
+  accounts Account[]
+
+  // ---- our domain ----
+  buildProfile   BuildProfile?
+  swipes         Swipe[]
+  invitesCreated Invite[]      @relation("createdBy")
+  redeemedInvite Invite?       @relation("redeemedBy")
+  // school placement (set when a school-invited student redeems)
+  schoolId       String?
+  school         School?       @relation("studentSchool", fields: [schoolId], references: [id])
+  cohortId       String?
+  cohort         Cohort?       @relation("studentCohort", fields: [cohortId], references: [id])
+
+  @@map("user")
+}
+
+model School {
+  id          String   @id @default(cuid())
+  name        String
+  region      String?
+  createdById String?
+  createdAt   DateTime @default(now())
+  cohorts     Cohort[]
+  invites     Invite[]
+  students    User[]   @relation("studentSchool")
+}
+
+model Cohort {
+  id         String   @id @default(cuid())
+  schoolId   String
+  school     School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  label      String // e.g. "9th grade" or "Ms. Lee · Period 3"
+  gradeLevel String? // e.g. "9th", "10th"
+  createdAt  DateTime @default(now())
+  invites    Invite[]
+  students   User[]   @relation("studentCohort")
+
+  @@index([schoolId])
+}
+
+model Session {
+  id             String   @id @default(cuid())
+  expiresAt      DateTime
+  token          String   @unique
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  ipAddress      String?
+  userAgent      String?
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  impersonatedBy String?
+
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id @default(cuid())
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@map("account")
+}
+
+model Verification {
+  id         String    @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime? @default(now())
+  updatedAt  DateTime? @updatedAt
+
+  @@map("verification")
+}
+
+// ---- domain ----
+model Invite {
+  id                String       @id @default(cuid())
+  code              String       @unique
+  intendedFirstName String?
+  email             String? // recipient address (Resend sends here; redeemer must match)
+  status            InviteStatus @default(PENDING)
+  createdById       String
+  createdBy         User         @relation("createdBy", fields: [createdById], references: [id])
+  redeemedById      String?      @unique
+  redeemedBy        User?        @relation("redeemedBy", fields: [redeemedById], references: [id])
+  schoolId          String?
+  school            School?      @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  cohortId          String?
+  cohort            Cohort?      @relation(fields: [cohortId], references: [id], onDelete: Cascade)
+  createdAt         DateTime     @default(now())
+  redeemedAt        DateTime?
+
+  @@index([cohortId])
+}
+
+model BuildProfile {
+  id          String    @id @default(cuid())
+  studentId   String    @unique
+  student     User      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  audience    String? // "hs" | "uni" | "job" — the path chosen on the first onboarding screen
+  grade       String?
+  gpa         String?
+  subjects    String[]  @default([])
+  strengths   String[]  @default([])
+  days        String[]  @default([])
+  values      String[]  @default([])
+  energy      String?
+  team        String?
+  interaction String?
+  years       String?
+  finance     String?
+  location    String?
+  pathPref    String?
+  completedAt DateTime?
+  updatedAt   DateTime  @updatedAt
+}
+
+// Accountability trail for sensitive admin actions (e.g. revealing a student's raw answers).
+model AuditLog {
+  id        String   @id @default(cuid())
+  actorId   String // admin who performed the action
+  action    String // e.g. "reveal_answers"
+  targetId  String? // affected student id
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+model Swipe {
+  id           String        @id @default(cuid())
+  studentId    String
+  student      User          @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  majorCode    String
+  decision     SwipeDecision
+  fit          Int           @default(0)
+  facetAnswers Boolean[]     @default([])
+  createdAt    DateTime      @default(now())
+
+  @@unique([studentId, majorCode])
+}

@@ -1,0 +1,19 @@
+{
+  "name": "@dreamari/dataset",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Seed career/major dataset + the transparent matching engine. Imported by the student app today and the Fastify API next — one source of truth.",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "types": "./src/index.ts",
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.5"
+  }
+}
