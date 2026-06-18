@@ -1,0 +1,10 @@
+{
+  "name": "@dreamari/design-tokens",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Dreamari design language — Mint Fresh, Bold Sticker. Shared by every client.",
+  "exports": {
+    "./tailwind-preset": "./tailwind-preset.cjs",
+    "./tokens.css": "./tokens.css"
+  }
+}
