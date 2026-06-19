@@ -66,7 +66,7 @@ export default function You() {
             {grade} · {pathPref ? PATH_LABEL[pathPref] ?? "Exploring" : "Exploring"}
           </div>
         </div>
-        <Link to="/onboarding" className="font-bold text-ink2 text-[12px] bg-white border-2 border-ink rounded-full px-3 py-1.5 shadow-sk-xs">
+        <Link to="/onboarding?redo=1" className="font-bold text-ink2 text-[12px] bg-white border-2 border-ink rounded-full px-3 py-1.5 shadow-sk-xs">
           Redo BUILD
         </Link>
       </div>

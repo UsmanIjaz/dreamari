@@ -878,11 +878,43 @@ export default function Onboarding() {
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const invited = params.get("invited") === "1";
-  // invited students already have an account + chose to join → skip the splash slides
-  const [screen, setScreen] = useState<ScreenName>(invited ? "intro" : "splash");
+  const redo = params.get("redo") === "1";
+  // invited students already have an account + chose to join → skip the splash slides;
+  // a deliberate "Redo BUILD" (?redo=1) also jumps past the splash.
+  const [screen, setScreen] = useState<ScreenName>(invited || redo ? "intro" : "splash");
   const [name, setName] = useState("");
   const startPath = useRef<string>("");
   const answers = useRef<Answers | null>(null);
+
+  // Guard: a signed-in student who has ALREADY completed BUILD should not be sitting in
+  // onboarding (login edge cases, the landing CTA, a stale session). Send them into the app.
+  // A deliberate "Redo BUILD" opts out. Runs in the background so a brand-new visitor (no
+  // session) is never blocked, and a redo never even checks.
+  useEffect(() => {
+    if (redo) {
+      // start the assessment fresh — don't resume a stale draft
+      try {
+        localStorage.removeItem(SAVE_KEY);
+      } catch {
+        /* ignore */
+      }
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      try {
+        const s = await authClient.getSession();
+        if (cancelled || !s.data) return; // no session → genuine new user, let them onboard
+        const m = await api.getMatch();
+        if (!cancelled && !m.needsBuild) navigate("/app/home", { replace: true });
+      } catch {
+        /* ignore — fall through to onboarding */
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [redo, navigate]);
 
   // Invited students arrive with their name + grade known. Pre-seed the assessment's
   // resume slot so those questions are filled and skipped (but never clobber an

@@ -20,6 +20,13 @@ export default function Login() {
     e.preventDefault();
     setErr(null);
     setBusy(true);
+    // If we're currently a guest, drop that session first so logging into an existing account is
+    // a clean switch, not an anonymous-account link (which could collide on the unique BUILD/swipe
+    // data and leave us stranded on the guest session, then bounced back to onboarding).
+    const cur = await authClient.getSession();
+    if ((cur.data?.user as { isAnonymous?: boolean } | undefined)?.isAnonymous) {
+      await authClient.signOut();
+    }
     const res = await authClient.signIn.email({ email: email.trim(), password });
     if (res.error) {
       setErr(res.error.message ?? "That email and password didn't match.");

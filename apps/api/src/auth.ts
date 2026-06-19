@@ -62,19 +62,47 @@ export const auth = betterAuth({
   plugins: [
     admin(),
     anonymous({
+      // When a guest links to an account, move their work over. This MUST be collision-safe:
+      // BuildProfile.studentId and Swipe[studentId, majorCode] are unique, so a blind re-parent
+      // throws if the target account already has its own data (e.g. a returning user signing in
+      // while a guest session is active) — and a throw here breaks the sign-in, stranding the
+      // user on the guest session and bouncing them back to onboarding. So we keep the account's
+      // existing data, adopt only what doesn't collide, and never let a hiccup block the user.
       onLinkAccount: async ({ anonymousUser, newUser }) => {
         const fromId = anonymousUser.user.id;
         const toId = newUser.user.id;
-        // Move the guest's work to the real account *before* the plugin deletes
-        // the anonymous user (their build/swipes cascade-delete with it otherwise).
-        await prisma.$transaction(async (tx) => {
-          await tx.buildProfile.updateMany({ where: { studentId: fromId }, data: { studentId: toId } });
-          await tx.swipe.updateMany({ where: { studentId: fromId }, data: { studentId: toId } });
-          const anon = await tx.user.findUnique({ where: { id: fromId }, select: { schoolId: true, cohortId: true } });
-          if (anon?.schoolId || anon?.cohortId) {
-            await tx.user.update({ where: { id: toId }, data: { schoolId: anon.schoolId, cohortId: anon.cohortId } });
-          }
-        });
+        try {
+          await prisma.$transaction(async (tx) => {
+            // BUILD profile: the account's own build wins if it has one; otherwise adopt the guest's.
+            const existing = await tx.buildProfile.findUnique({ where: { studentId: toId }, select: { id: true } });
+            if (existing) {
+              await tx.buildProfile.deleteMany({ where: { studentId: fromId } });
+            } else {
+              await tx.buildProfile.updateMany({ where: { studentId: fromId }, data: { studentId: toId } });
+            }
+            // Swipes: move only the majors the account hasn't swiped; drop the colliding duplicates.
+            const taken = new Set(
+              (await tx.swipe.findMany({ where: { studentId: toId }, select: { majorCode: true } })).map((s) => s.majorCode),
+            );
+            const guestSwipes = await tx.swipe.findMany({ where: { studentId: fromId }, select: { id: true, majorCode: true } });
+            const move = guestSwipes.filter((s) => !taken.has(s.majorCode)).map((s) => s.id);
+            const drop = guestSwipes.filter((s) => taken.has(s.majorCode)).map((s) => s.id);
+            if (move.length) await tx.swipe.updateMany({ where: { id: { in: move } }, data: { studentId: toId } });
+            if (drop.length) await tx.swipe.deleteMany({ where: { id: { in: drop } } });
+            // School/cohort placement: fill only what the account is missing, never clobber it.
+            const anon = await tx.user.findUnique({ where: { id: fromId }, select: { schoolId: true, cohortId: true } });
+            if (anon?.schoolId || anon?.cohortId) {
+              const acct = await tx.user.findUnique({ where: { id: toId }, select: { schoolId: true, cohortId: true } });
+              await tx.user.update({
+                where: { id: toId },
+                data: { schoolId: acct?.schoolId ?? anon.schoolId, cohortId: acct?.cohortId ?? anon.cohortId },
+              });
+            }
+          });
+        } catch (err) {
+          // The account is valid even if migration failed; never block the user from getting in.
+          console.error("onLinkAccount migration failed (non-fatal):", err);
+        }
       },
     }),
   ],
