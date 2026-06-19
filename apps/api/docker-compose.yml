@@ -1,0 +1,17 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: dreamari-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: dreamari
+      POSTGRES_DB: dreamari
+    ports:
+      # host 5434 -> container 5432, to avoid clashing with a local Postgres
+      - "5434:5432"
+    volumes:
+      - dreamari_pg:/var/lib/postgresql/data
+
+volumes:
+  dreamari_pg:

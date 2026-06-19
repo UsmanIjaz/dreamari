@@ -1,0 +1,12 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "vite",
+  "installCommand": "pnpm install --frozen-lockfile",
+  "buildCommand": "pnpm --filter @dreamari/admin build",
+  "outputDirectory": "dist",
+  "rewrites": [
+    { "source": "/v1/:path*", "destination": "https://dreamari-production.up.railway.app/v1/:path*" },
+    { "source": "/api/:path*", "destination": "https://dreamari-production.up.railway.app/api/:path*" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
