@@ -1,9 +1,10 @@
 import { useState, type ReactNode } from "react";
 import { Link } from "react-router-dom";
+import { Mascot } from "../components/Mascot";
 
 /* ------------------------------------------------------------------ shared bits */
 
-/** The Dreamy face mark — two eyes + smile in a sticker badge. */
+/** The Dreamy face mark, two eyes in a sticker badge. */
 function DreamyMark({ size = 34, radius = 11, bg = "bg-jade" }: { size?: number; radius?: number; bg?: string }) {
   const eye = (
     <span className="bg-white rounded-full flex items-center justify-center" style={{ width: size * 0.2, height: size * 0.2 }}>
@@ -63,7 +64,7 @@ function Nav() {
     <header className="sticky top-0 z-[100] bg-[oklch(0.975_0.03_122_/_0.92)] border-b-[2.5px] border-ink backdrop-blur">
       <div className="max-w-[1180px] mx-auto px-4 sm:px-8 h-[74px] flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <DreamyMark />
+          <Mascot size={34} mood="happy" level={4} />
           <span className="text-[21px] font-extrabold tracking-tight text-ink">
             Dreamari<span className="text-jade">.</span>
           </span>
@@ -170,19 +171,20 @@ function Hero() {
         <div>
           <div className="inline-flex items-center gap-2.5 bg-white border-[2.5px] border-ink shadow-sk-sm rounded-full px-3.5 py-2 text-[13px] font-extrabold text-ink">
             <span className="w-2.5 h-2.5 rounded-full bg-green" />
-            Career discovery for ages 13–18
+            Made for ages 13 to 18
           </div>
           <h1 className="text-[clamp(38px,8.5vw,66px)] leading-[1.02] font-extrabold tracking-[-0.035em] mt-6 text-ink">
-            Dream about who you could{" "}
+            Dream your{" "}
             <span className="relative whitespace-nowrap">
-              become
+              future
               <span className="absolute left-0 right-0 bottom-1.5 h-3 rounded-full -z-10 bg-yellow" />
-            </span>
-            .
+            </span>{" "}
+            now.
           </h1>
           <p className="text-[clamp(17px,4.5vw,20px)] leading-relaxed font-medium mt-6 max-w-[30ch] text-ink2">
-            Turn "I have no idea what I want to do" into a map of careers that actually fit you — built
-            from quick quizzes, real day-in-the-life simulations, and a companion that grows as you do.
+            Not knowing what's next is the perfect place to begin. Together we'll find careers that
+            feel like you, through quick quizzes, real day-in-the-life adventures, and a companion who
+            grows right alongside you.
           </p>
           <div className="flex gap-3.5 flex-wrap mt-8">
             <Link
@@ -400,18 +402,18 @@ function HowItWorks() {
       <div className="max-w-[1180px] mx-auto px-4 sm:px-8 pt-16 sm:pt-24 pb-10 text-center">
         <p className="font-mono text-[13px] tracking-[0.16em] uppercase text-jadeDeep font-medium mb-3.5">How it works</p>
         <h2 className="text-[clamp(30px,6vw,46px)] leading-tight font-extrabold tracking-tight mx-auto max-w-[18ch] text-ink">
-          Three steps from "no clue" to a real shortlist.
+          Three gentle steps to careers that feel like you.
         </h2>
         <p className="text-[19px] leading-relaxed font-medium mt-4 mx-auto max-w-[54ch] text-ink2">
-          No grades, no wrong answers. Just a few minutes that point your curiosity somewhere real.
+          No grades, no wrong answers. Just a few minutes that turn your curiosity into a real direction.
         </p>
       </div>
       <Step
         n="1"
         badgeBg="bg-yellow"
         badgeText="text-yellowInk"
-        title="Answer a few quick questions"
-        body="Tap through playful either-or questions about how you think, what you enjoy, and what a good day feels like. Three minutes, tops — and you can stop any time."
+        title="Tell us what you're into"
+        body="Tap through playful this-or-that questions about how you think, what you enjoy, and what a good day feels like. About three minutes, and you can pause whenever you want."
         pills={["No prep needed", "3 minutes"]}
         mock={<StepMockQuiz />}
       />
@@ -419,8 +421,8 @@ function HowItWorks() {
         n="2"
         badgeBg="bg-green"
         badgeText="text-white"
-        title="Meet careers that actually fit"
-        body="Get a ranked shortlist with a match score — and, more importantly, the why. Every match explains which of your strengths and interests it's built on, so it never feels like a black box."
+        title="Meet careers that fit who you are"
+        body="Get a friendly shortlist with a match score and, even better, the why behind each one. Every match shows you the strengths and interests it's built on, so it always makes sense."
         pills={["Explainable matches", "1,200+ careers"]}
         mock={<StepMockMatches />}
         reverse
@@ -441,12 +443,12 @@ function HowItWorks() {
 
 /* ------------------------------------------------------------------ features */
 const FEATURES = [
-  { bg: "bg-jade", title: "Day-in-the-life sims", body: "Don't just read about a job — make the calls a real one makes for a day, then see if it clicked." },
-  { bg: "bg-yellow", title: "Matches that explain themselves", body: "Every result shows the strengths and interests it's built on. No mystery algorithm, no labels you can't argue with." },
-  { bg: "bg-green", title: "Dream Score & streaks", body: "Progress you can feel. Every bit of exploring nudges your score and keeps your streak alive — gently, never naggy." },
-  { bg: "bg-jade", title: "A companion that grows", body: "Your character starts undefined and becomes more itself as you explore — a small reflection of you, figuring it out too." },
-  { bg: "bg-terra", title: "Save & compare paths", body: "Keep a shortlist of the careers worth a second look, side by side — pay, training, and what the day actually feels like." },
-  { bg: "bg-yellow", title: "Safe & private by design", body: "No grades, no public profiles, no data sold. A calm place to be curious about your future — on your terms." },
+  { bg: "bg-jade", title: "Day-in-the-life adventures", body: "Step into a real day on the job, make the same calls a pro makes, and notice what genuinely lights you up." },
+  { bg: "bg-yellow", title: "Matches that explain themselves", body: "Every result shows you the strengths and interests it's built on, so you always know exactly why it fits you." },
+  { bg: "bg-green", title: "Dream Score & streaks", body: "Progress you can feel. Every bit of exploring lifts your score and keeps your streak going, gently and never naggy." },
+  { bg: "bg-jade", title: "A companion that grows with you", body: "Your companion starts as a soft little blur and grows brighter as you explore, a small reflection of you, figuring it out too." },
+  { bg: "bg-terra", title: "Save & compare your favorites", body: "Keep the careers you love side by side, with pay, training, and what the day really feels like, all in one place." },
+  { bg: "bg-yellow", title: "Safe & private, always", body: "No grades, no public profiles, nothing sold. A calm place to be curious about your future, fully on your terms." },
 ];
 
 function Features() {
@@ -456,7 +458,7 @@ function Features() {
         <div className="max-w-[30ch]">
           <p className="font-mono text-[13px] tracking-[0.16em] uppercase text-jadeDeep font-medium mb-3.5">What's inside</p>
           <h2 className="text-[clamp(30px,6vw,46px)] leading-tight font-extrabold tracking-tight text-ink">
-            More than a personality quiz.
+            Everything you need to find your direction.
           </h2>
         </div>
         <div className="grid gap-4.5 sm:grid-cols-2 lg:grid-cols-3 mt-11" style={{ gap: 18 }}>
@@ -493,12 +495,12 @@ function Companion() {
         <div>
           <p className="font-mono text-[13px] tracking-[0.16em] uppercase text-jadeDeep font-medium mb-3.5">Your companion</p>
           <h2 className="text-[clamp(29px,6vw,44px)] leading-tight font-extrabold tracking-tight text-ink">
-            It starts as a blur. So does everyone.
+            A companion that grows right alongside you.
           </h2>
           <p className="text-[18px] leading-relaxed font-medium mt-5 max-w-[46ch] text-ink2">
-            Meet your companion — a soft little character that begins undefined and grows sharper,
-            brighter, and more itself with every step you take. It's not a score to chase. It's a
-            reminder that becoming someone is a process, and you're already in it.
+            Meet your companion, a soft little character who starts out a blur and grows brighter and
+            more itself with every step you take. It isn't a score to chase. It's a gentle reminder
+            that becoming who you are is a journey, and you're already well on your way.
           </p>
           <div className="flex gap-3.5 flex-wrap mt-7">
             <div className="flex items-center gap-3 bg-white border-[2.5px] border-ink shadow-sk rounded-[14px] px-4 py-3">
@@ -526,26 +528,31 @@ function Companion() {
           <div className="flex items-end justify-center flex-wrap gap-x-3 gap-y-4.5" style={{ rowGap: 18 }}>
             {blobs.map((b) => (
               <div key={b.label} className="flex flex-col items-center gap-2.5">
-                <div
-                  className="rounded-full border-[2.5px] border-ink shadow-sk-sm flex items-center justify-center"
-                  style={{ width: b.size, height: b.size, background: b.bg }}
-                >
-                  {b.eyes ? (
-                    <span className="flex" style={{ gap: b.size * 0.14 }}>
-                      <span className="rounded-full bg-white flex items-center justify-center" style={{ width: b.size * 0.16, height: b.size * 0.16 }}>
-                        <span className="rounded-full bg-ink" style={{ width: b.size * 0.06, height: b.size * 0.06 }} />
+                {b.label === "Companion" ? (
+                  // the fully realized stage IS Dreamy, the exact mascot from onboarding
+                  <Mascot size={b.size} mood="happy" level={4} />
+                ) : (
+                  <div
+                    className="rounded-full border-[2.5px] border-ink shadow-sk-sm flex items-center justify-center"
+                    style={{ width: b.size, height: b.size, background: b.bg }}
+                  >
+                    {b.eyes ? (
+                      <span className="flex" style={{ gap: b.size * 0.14 }}>
+                        <span className="rounded-full bg-white flex items-center justify-center" style={{ width: b.size * 0.16, height: b.size * 0.16 }}>
+                          <span className="rounded-full bg-ink" style={{ width: b.size * 0.06, height: b.size * 0.06 }} />
+                        </span>
+                        <span className="rounded-full bg-white flex items-center justify-center" style={{ width: b.size * 0.16, height: b.size * 0.16 }}>
+                          <span className="rounded-full bg-ink" style={{ width: b.size * 0.06, height: b.size * 0.06 }} />
+                        </span>
                       </span>
-                      <span className="rounded-full bg-white flex items-center justify-center" style={{ width: b.size * 0.16, height: b.size * 0.16 }}>
-                        <span className="rounded-full bg-ink" style={{ width: b.size * 0.06, height: b.size * 0.06 }} />
+                    ) : (
+                      <span className="flex gap-1.5">
+                        <span className="w-2 h-0.5 rounded-full bg-ink/60" />
+                        <span className="w-2 h-0.5 rounded-full bg-ink/60" />
                       </span>
-                    </span>
-                  ) : (
-                    <span className="flex gap-1.5">
-                      <span className="w-2 h-0.5 rounded-full bg-ink/60" />
-                      <span className="w-2 h-0.5 rounded-full bg-ink/60" />
-                    </span>
-                  )}
-                </div>
+                    )}
+                  </div>
+                )}
                 <span className="text-[11px] font-extrabold text-ink2">{b.label}</span>
               </div>
             ))}
@@ -565,7 +572,7 @@ function Companion() {
 
 /* ------------------------------------------------------------------ testimonials */
 const QUOTES = [
-  { border: "border-yellow", shadow: "6px 6px 0 oklch(0.85 0.15 92)", body: "I always froze when adults asked what I wanted to do. Dreamari made it a game instead of a quiz I could fail — and the matches actually sounded like me.", name: "Maya, 16", grade: "11th grade", hue: 165 },
+  { border: "border-yellow", shadow: "6px 6px 0 oklch(0.85 0.15 92)", body: "I always froze when adults asked what I wanted to do. Dreamari made it a game instead of a quiz I could fail, and the matches actually sounded like me.", name: "Maya, 16", grade: "11th grade", hue: 165 },
   { border: "border-green", shadow: "6px 6px 0 oklch(0.55 0.14 155)", body: "The day-in-the-life thing is unreal. I tried being a physical therapist for a day and realized I actually loved the people part more than the science.", name: "Diego, 15", grade: "10th grade", hue: 150 },
   { border: "border-terra", shadow: "6px 6px 0 oklch(0.63 0.15 38)", body: "My streak is the only one I haven't broken. Watching my companion go from a grey blob to… kind of me? It's silly but it keeps me coming back.", name: "Priya, 17", grade: "12th grade", hue: 205 },
 ];
@@ -599,7 +606,7 @@ function Testimonials() {
           ))}
         </div>
         <p className="text-center font-mono text-[11px] text-[oklch(0.70_0.06_150)] mt-7">
-          Illustrative — replace with real student quotes before launch.
+          Illustrative. Replace with real student quotes before launch.
         </p>
       </div>
     </section>
@@ -611,7 +618,7 @@ function Parents() {
   const items = [
     { bg: "bg-green", title: "No grades, no ranking", body: "Exploration, not assessment. Nothing here can be passed or failed." },
     { bg: "bg-jade", title: "Private & safe by default", body: "No public profiles, no data sold. Student-first privacy, always." },
-    { bg: "bg-yellow", title: "A light counselor dashboard", body: "See engagement at a glance — meet students where their curiosity already is." },
+    { bg: "bg-yellow", title: "A light counselor dashboard", body: "See engagement at a glance, and meet students right where their curiosity already is." },
   ];
   return (
     <section id="parents" className="bg-[oklch(0.955_0.045_150)] border-y-[2.5px] border-ink">
@@ -622,8 +629,8 @@ function Parents() {
             Built to be trusted by the grown-ups, too.
           </h2>
           <p className="text-[18px] leading-relaxed font-medium mt-5 max-w-[46ch] text-ink2">
-            Dreamari is a calm, private space for teens to explore — not another thing to be graded on.
-            Counselors get a light dashboard; parents get peace of mind.
+            Dreamari is a calm, private space to explore what's next, never another thing to be graded
+            on. Counselors get a light dashboard, and parents get peace of mind.
           </p>
           <a
             href="#faq"
@@ -650,11 +657,11 @@ function Parents() {
 
 /* ------------------------------------------------------------------ faq */
 const FAQS = [
-  { q: "Is Dreamari free?", a: "Yes — you can start exploring for free, no account or payment needed to try it. Some deeper features may come with a school or family plan later, but the core discovery experience is free for students." },
-  { q: "Who is it for?", a: "Dreamari is built specifically for high-schoolers, roughly ages 13 to 18. The questions, simulations, and tone are all designed for where you are right now — not for adults already in careers." },
+  { q: "Is Dreamari free?", a: "Yes. The core discovery experience is free, and you can start exploring right away. Creating a free account lets you save your matches and pick up where you left off. Some deeper features may arrive with a school or family plan later." },
+  { q: "Who is it for?", a: "Dreamari is made for you, roughly ages 13 to 18. The questions, simulations, and tone are all designed for where you are right now, not for adults already settled into careers." },
   { q: "Is this just another personality quiz?", a: "No. The quiz is only the starting point. The real value is in trying careers on through day-in-the-life simulations, seeing real pay and training paths, and getting matches that explain exactly why they fit you." },
   { q: "What about my privacy?", a: "Privacy is the default, not a setting. There are no public profiles, your exploration is yours, and we never sell student data. Parents and counselors only ever see what you choose to share." },
-  { q: "Do I have to know what I want to do?", a: "Absolutely not — that's the whole point. Dreamari is built for the \"I have no idea\" moment. There are no grades and no wrong answers, just a few minutes that point your curiosity somewhere real." },
+  { q: "Do I have to know what I want to do?", a: "Absolutely not, that's the whole point. Dreamari is made for the \"I have no idea\" moment. There are no grades and no wrong answers, just a few minutes that point your curiosity somewhere real." },
 ];
 
 function Faq() {
@@ -684,7 +691,7 @@ function Faq() {
                       isOpen ? "bg-jade text-white" : "bg-mint text-jadeDeep"
                     }`}
                   >
-                    {isOpen ? "–" : "+"}
+                    {isOpen ? "-" : "+"}
                   </span>
                 </button>
                 {isOpen && (
@@ -709,13 +716,13 @@ function FinalCta() {
       <span className="absolute bottom-[90px] right-[16%] w-[17px] h-[17px] bg-yellow border-[2.5px] border-ink rounded-[3px] drm-floatB" />
       <div className="max-w-[760px] mx-auto px-4 sm:px-8 py-20 sm:py-24 text-center relative z-[5]">
         <div className="inline-flex mb-7">
-          <DreamyMark size={96} radius={999} bg="bg-white" />
+          <Mascot size={96} mood="happy" level={4} />
         </div>
         <h2 className="text-[clamp(32px,7vw,52px)] leading-tight font-extrabold tracking-tight text-white">
-          Your future's worth three minutes.
+          Your future is waiting. Let's go find it.
         </h2>
         <p className="text-[clamp(17px,4.5vw,20px)] leading-snug font-medium mt-4.5 mx-auto max-w-[42ch] text-[oklch(0.96_0.04_140)]" style={{ marginTop: 18 }}>
-          Start free, no account needed to try it. See where your curiosity points.
+          Start exploring for free. Come see where your curiosity leads.
         </p>
         <div className="flex gap-3.5 justify-center flex-wrap mt-8">
           <Link
@@ -738,19 +745,27 @@ function FinalCta() {
 
 /* ------------------------------------------------------------------ footer */
 function Footer() {
-  const col = (title: string, links: string[]) => (
+  const col = (title: string, links: { l: string; href: string }[]) => (
     <div>
       <div className="text-[13px] font-extrabold uppercase tracking-wide text-[oklch(0.80_0.06_150)] mb-3.5">{title}</div>
       <div className="flex flex-col gap-2.5 text-[14px] font-semibold">
-        {links.map((l) => (
-          <a key={l} href="#" className="text-[oklch(0.88_0.03_140)] hover:text-white transition-colors">{l}</a>
-        ))}
+        {links.map((link) =>
+          link.href.startsWith("/") ? (
+            <Link key={link.l} to={link.href} className="text-[oklch(0.88_0.03_140)] hover:text-white transition-colors">
+              {link.l}
+            </Link>
+          ) : (
+            <a key={link.l} href={link.href} className="text-[oklch(0.88_0.03_140)] hover:text-white transition-colors">
+              {link.l}
+            </a>
+          ),
+        )}
       </div>
     </div>
   );
   return (
     <footer className="bg-[oklch(0.18_0.045_162)] text-[oklch(0.92_0.03_140)]">
-      <div className="max-w-[1180px] mx-auto px-4 sm:px-8 pt-12 sm:pt-16 pb-10 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="max-w-[1180px] mx-auto px-4 sm:px-8 pt-12 sm:pt-16 pb-10 grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
         <div>
           <div className="flex items-center gap-3 mb-3.5">
             <DreamyMark size={32} radius={10} />
@@ -759,16 +774,23 @@ function Footer() {
             </span>
           </div>
           <p className="text-[14px] leading-relaxed font-medium max-w-[34ch] text-[oklch(0.74_0.04_150)]">
-            Career discovery for ages 13–18. Dream about who you could become.
+            Career discovery for ages 13 to 18. Dream about who you could become.
           </p>
         </div>
-        {col("Product", ["How it works", "Features", "Get started"])}
-        {col("For grown-ups", ["For parents", "For schools", "FAQ"])}
-        {col("Company", ["About", "Privacy", "Contact"])}
+        {col("Product", [
+          { l: "How it works", href: "#how" },
+          { l: "Features", href: "#features" },
+          { l: "Get started", href: "/onboarding" },
+        ])}
+        {col("For grown-ups", [
+          { l: "For parents", href: "#parents" },
+          { l: "For schools", href: "#parents" },
+          { l: "FAQ", href: "#faq" },
+        ])}
       </div>
       <div className="border-t border-[oklch(0.30_0.04_160)] max-w-[1180px] mx-auto px-4 sm:px-8 py-5 flex justify-between flex-wrap gap-3 text-[13px] font-medium text-[oklch(0.68_0.04_150)]">
         <span>© 2026 Dreamari. All rights reserved.</span>
-        <span className="font-mono">Made for dreamers · ages 13–18</span>
+        <span className="font-mono">Made for dreamers · ages 13 to 18</span>
       </div>
     </footer>
   );

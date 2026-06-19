@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630"
+  font-family="'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif">
+  <!-- jade backdrop -->
+  <rect width="1200" height="630" fill="#1e9d6f" />
+
+  <!-- floating sticker shapes -->
+  <circle cx="150" cy="140" r="20" fill="#f4c531" stroke="#14271d" stroke-width="5" />
+  <rect x="1008" y="118" width="36" height="36" rx="7" fill="#f4c531" stroke="#14271d" stroke-width="5" transform="rotate(14 1026 136)" />
+  <circle cx="1058" cy="500" r="16" fill="#e07a4f" stroke="#14271d" stroke-width="5" />
+  <rect x="138" y="468" width="30" height="30" rx="6" fill="#ffffff" stroke="#14271d" stroke-width="5" transform="rotate(-10 153 483)" />
+
+  <!-- Dreamy, the companion -->
+  <g transform="translate(600,248)">
+    <circle r="132" fill="#ffffff" stroke="#14271d" stroke-width="9" />
+    <circle cx="-38" cy="-12" r="17" fill="#14271d" />
+    <circle cx="38" cy="-12" r="17" fill="#14271d" />
+    <circle cx="-44" cy="-19" r="6" fill="#ffffff" />
+    <circle cx="32" cy="-19" r="6" fill="#ffffff" />
+    <path d="M-26 36 H26 A26 26 0 0 1 -26 36 Z" fill="#e07a4f" />
+    <rect x="96" y="-132" width="42" height="42" rx="9" fill="#f4c531" stroke="#14271d" stroke-width="6" transform="rotate(45 117 -111)" />
+  </g>
+
+  <!-- headline + brand -->
+  <text x="600" y="472" text-anchor="middle" font-size="70" font-weight="800" fill="#ffffff" letter-spacing="-2">Dream your future now.</text>
+  <text x="600" y="540" text-anchor="middle" font-size="30" font-weight="600" fill="#d8efdf">Dreamari · Discover careers that fit who you are</text>
+</svg>
